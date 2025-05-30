@@ -8,6 +8,7 @@ This is **Part 1**, where I focus on setting up the Terraform configuration file
 ## 🏗️ Part 1: Terraform Setup and Prerequisites
 
 In Part 1, I achieved the following:
+
 ✅ Created Terraform directory structure with modular files for `instances` and `storage`.  
 ✅ Defined `variables.tf` in the root and module directories with `region`, `zone`, and `project_id`.  
 ✅ Configured `main.tf` with the Terraform block and Google provider.  
