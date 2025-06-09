@@ -54,11 +54,92 @@ terraform validate
 
 ---
 
-### 📚 What's Next (Part 2 Preview)
-- Import existing VM instances into Terraform.
-- Create a VPC network and two subnets.
-- Add a firewall rule to allow HTTP ingress.
-- Configure remote backend using a GCS bucket.
+### 🔹 Task 3: Import VM Instances into Terraform
+We imported two Compute Engine VM instances that were created manually outside of Terraform and added them to our configuration.
+
+#### Commands Used:
+```bash
+terraform import module.instances.google_compute_instance.tf-instance-1 projects/PROJECT_ID/zones/ZONE/instances/tf-instance-1
+terraform import module.instances.google_compute_instance.tf-instance-2 projects/PROJECT_ID/zones/ZONE/instances/tf-instance-2
+```
+
+---
+
+### 🔹 Task 4: Update VM Configuration
+- Modified `machine_type` for both instances to `e2-standard-2`.
+- Added a third instance `tf-instance-816008` (later destroyed in Task 5).
+
+#### Code Snippet (in modules/instances/instances.tf):
+```hcl
+machine_type = "e2-standard-2"
+```
+
+---
+
+### 🔹 Task 5: Destroy Unneeded Instance
+- Removed `tf-instance-816008` from configuration and ran:
+```bash
+terraform apply
+```
+
+---
+
+### 🔹 Task 6: Use Terraform Registry Module for VPC
+- Integrated `terraform-google-modules/network/google` version `6.0.0`
+- Created VPC `tf-vpc-946376` with two subnets:
+  - `subnet-01` (10.10.10.0/24)
+  - `subnet-02` (10.10.20.0/24)
+
+#### Example Configuration:
+```hcl
+module "vpc" {
+  source  = "terraform-google-modules/network/google"
+  version = "6.0.0"
+  project_id   = var.project_id
+  network_name = "tf-vpc-946376"
+  routing_mode = "GLOBAL"
+  subnets = [
+    { subnet_name = "subnet-01", subnet_ip = "10.10.10.0/24", subnet_region = "us-central1" },
+    { subnet_name = "subnet-02", subnet_ip = "10.10.20.0/24", subnet_region = "us-central1" }
+  ]
+}
+```
+
+---
+
+### 🔹 Task 7: Connect Instances to VPC Subnets
+- Updated `network_interface` for each instance:
+  - `tf-instance-1` → `subnet-01`
+  - `tf-instance-2` → `subnet-02`
+
+#### Code Snippet (within instances.tf):
+```hcl
+network_interface {
+  network    = "tf-vpc-946376"
+  subnetwork = "subnet-01" # or subnet-02 accordingly
+}
+```
+
+---
+
+## 🧠 Key Takeaways
+
+- Learned how to import unmanaged resources into Terraform.
+- Re-provisioned and destroyed infrastructure cleanly.
+- Leveraged modules from Terraform Registry to follow best practices.
+- Connected infrastructure using VPC and subnet concepts.
+
+---
+
+## 💻 Useful Commands
+
+```bash
+terraform init
+terraform plan
+terraform apply
+terraform destroy
+terraform import
+```
 - Test connectivity between VM instances.
 - Destroy infrastructure safely when done.
 
