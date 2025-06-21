@@ -84,12 +84,50 @@ kubectl create namespace dev
 
 These triggers ensure automated builds and deployments when code is pushed to GitHub.
 
+
+# Part 2: The Implemented DevOps Workforce in Google Cloud
+
+## Overview
+This part focuses on the actual deployment process triggered via GitHub commits and managed through Cloud Build Triggers. We walk through deploying to GKE, setting up Load Balancer Services, and validating the running application.
+
 ---
 
-## 📎 What's Next?
+## ✅ Tasks Covered
 
-Check out **Part Two** where we:
-- Build Docker images
-- Deploy to GKE
-- Expose apps via LoadBalancers
-- Validate app endpoints
+### 1. Configure Cloud Build YAMLs
+- Updated `cloudbuild.yaml` and `cloudbuild-dev.yaml` to set version tags (e.g., `v1.0`)
+- Replaced `<PROJECT_ID>` with actual project ID
+- Ensured Docker images match between YAML files and Kubernetes manifests
+
+### 2. Deployment to GKE via GitHub Commits
+- Pushed changes to `dev` branch triggers `cloudbuild-dev.yaml`
+- Pushed changes to `master` branch triggers `cloudbuild.yaml`
+
+### 3. Kubernetes Deployment
+```bash
+kubectl apply -f dev/deployment.yaml -n dev
+kubectl apply -f prod/deployment.yaml -n prod
+```
+
+### 4. Expose Services
+```bash
+kubectl expose deployment development-deployment   --type=LoadBalancer   --name=dev-deployment-service   --port=8080   --target-port=8080   -n dev
+
+kubectl expose deployment production-deployment   --type=LoadBalancer   --name=prod-deployment-service   --port=8080   --target-port=8080   -n prod
+```
+
+### 5. Validate Deployments
+Access via:
+```
+http://<EXTERNAL-IP>:8080/blue
+```
+
+---
+
+## 🧪 Rollback Strategy
+- Use GKE dashboard or `kubectl rollout undo` for quick rollback.
+
+---
+
+## 🔗 Final Thoughts
+This completes the end-to-end DevOps pipeline using GitHub, Cloud Build, Artifact Registry, and GKE. Fully automated, scalable, and production-ready.
