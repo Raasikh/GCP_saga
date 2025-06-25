@@ -1,4 +1,4 @@
-# Episode 7: Building a Data Warehouse with BigQuery
+# Episode 8: Building a Data Warehouse with BigQuery
 
 In this episode of the "8 Reasons Why GCP" series, we focus on designing and populating a data warehouse using Google BigQuery. This was one of the most dynamic labs—each refresh generated a new setup, making the experience refreshingly different and intellectually rewarding.
 
